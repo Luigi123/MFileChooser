@@ -22,9 +22,9 @@ The plugin creates the object `window.plugins.mfilechooser`. To use, call the `o
 ### Simple using ###
 
 ```javascript
-   window.plugins.mfilechooser.open([], function (uri) {
+   window.plugins.mfilechooser.open([], function (fileContents) {
       
-      alert(uri);
+      alert(fileContents);
       
     }, function (error) {
       
@@ -36,9 +36,9 @@ The plugin creates the object `window.plugins.mfilechooser`. To use, call the `o
 ### Filtering by extension ###
 
 ```javascript
-   window.plugins.mfilechooser.open(['.doc', '.xls', '.ppt'], function (uri) {
+   window.plugins.mfilechooser.open(['.doc', '.xls', '.ppt'], function (fileContents) {
       
-      alert(uri);
+      alert(fileContents);
       
     }, function (error) {
       
