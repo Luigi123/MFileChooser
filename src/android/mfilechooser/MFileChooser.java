@@ -17,6 +17,10 @@ import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
 
+import java.io.File;
+import org.apache.commons.io.FileUtils;
+import java.io.IOException;
+
 public class MFileChooser extends CordovaPlugin {
     private static final String TAG = "MFileChooser";
     private static final String ACTION_OPEN = "open";
@@ -73,8 +77,13 @@ public class MFileChooser extends CordovaPlugin {
                 if (uri != null) {
 
                     Log.w(TAG, uri.toString());
-                    callback.success(uri.toString());
 
+                    try{
+                        callback.success(readFile(uri));
+                    }catch(IOException e){
+                        callback.error("Error reading the file");                        
+                    }
+                    
                 } else {
 
                     callback.error("File uri was null");
@@ -92,6 +101,10 @@ public class MFileChooser extends CordovaPlugin {
                 callback.error(resultCode);
             }
         }
+    }
+    public static String readFile(String fileName) throws IOException {
+        File file = FileUtils.getFile(fileName);
+        return org.apache.commons.io.FileUtils.readFileToString(file);
     }
 
 }
