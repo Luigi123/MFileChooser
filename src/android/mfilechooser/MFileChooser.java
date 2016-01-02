@@ -5,8 +5,10 @@ import java.util.ArrayList;
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.PluginResult;
+import org.apache.cordova.CordovaActivity;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.orleonsoft.android.simplefilechooser.Constants;
 import com.orleonsoft.android.simplefilechooser.ui.FileChooserActivity;
@@ -19,6 +21,7 @@ import android.util.Log;
 
 import java.io.File;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import java.io.IOException;
 
 public class MFileChooser extends CordovaPlugin {
@@ -37,7 +40,6 @@ public class MFileChooser extends CordovaPlugin {
         {
         	exts.add(args.getString(i).toLowerCase());
         }
-  	
 		if (action.equals(ACTION_OPEN)) {
             chooseFile(callbackContext,exts);
             return true;
@@ -45,7 +47,7 @@ public class MFileChooser extends CordovaPlugin {
         
         return false;
 	}
-	
+
     public void chooseFile(CallbackContext callbackContext, ArrayList<String> ext) {
 
         // type and title should be configurable
@@ -72,16 +74,18 @@ public class MFileChooser extends CordovaPlugin {
 
             if (resultCode == Activity.RESULT_OK) {
 
-                //Uri uri = data.getData();
                 String uri = data.getStringExtra(Constants.KEY_FILE_SELECTED);
                 if (uri != null) {
-
                     Log.w(TAG, uri.toString());
-
-                    try{
-                        callback.success(readFile(uri));
-                    }catch(IOException e){
-                        callback.error("Error reading the file");                        
+                    JSONObject obj = new JSONObject();
+                    try {
+                        obj.put("filepath", uri.toString());
+                        obj.put("filename", FilenameUtils.getName(uri.toString()));
+                        obj.put("content", readFile(uri));
+                        callback.success(obj);
+                    } catch (Exception e) {
+                        Log.e("FileChooser", "File select error", e);
+                        callback.error(e.getMessage());
                     }
                     
                 } else {
@@ -106,5 +110,4 @@ public class MFileChooser extends CordovaPlugin {
         File file = FileUtils.getFile(fileName);
         return org.apache.commons.io.FileUtils.readFileToString(file);
     }
-
 }
